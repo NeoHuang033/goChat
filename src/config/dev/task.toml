@@ -1,0 +1,6 @@
+[task-base]
+redisAddr = "localhost:8080"
+redisPassword = ""
+rpcAddress = "tcp@localhost:6923"
+pushChan = 2
+pushChanSize = 50
