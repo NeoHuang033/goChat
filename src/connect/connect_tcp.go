@@ -30,7 +30,7 @@ func (c *Connect) InitTcpServer() error {
 }
 
 func handleConnection(conn net.Conn) {
-	defer conn.Close()
+	//defer conn.Close()
 
 	messages := "Hello, World!\n"
 	_, err := conn.Write([]byte(messages))
