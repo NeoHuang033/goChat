@@ -1,49 +1,31 @@
 package main
 
 import (
-	"context"
-	"log"
-	"time"
-
-	"github.com/gin-gonic/gin"
+	"crypto/rand"
+	"encoding/hex"
+	//"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"goChat/src/api"
+	"goChat/src/connect"
 )
 
 var mongoClient *mongo.Client
 
 func main() {
-	setupMongoDB()
+	/*secretKey, err := generateSecretKey()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Secret Key:", secretKey)*/
+	connect.New().Run()
+	api.New().Run()
 
-	// 创建Gin引擎
-	router := gin.Default()
-	handler := api.NewHandler(mongoClient)
-
-	// 路由和处理器
-	router.POST("/register", handler.RegisterHandler())
-	//router.POST("/login", loginHandler)
-
-	// 启动Gin服务器
-	router.Run(":8080")
 }
 
-func setupMongoDB() {
-	var err error
-	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
-	defer cancel()
-
-	// 连接到MongoDB
-	mongoClient, err = mongo.Connect(ctx, options.Client().ApplyURI("mongodb://neo:123456admin@localhost:27017"))
-
-	if err != nil {
-		log.Fatal(err)
+func generateSecretKey() (string, error) {
+	bytes := make([]byte, 32) // 生成 256 位密钥
+	if _, err := rand.Read(bytes); err != nil {
+		return "", err // 读取随机数失败
 	}
-
-	// 检查连接
-	err = mongoClient.Ping(ctx, nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println("Connected to MongoDB")
+	return hex.EncodeToString(bytes), nil // 将字节序列转换成十六进制编码的字符串
 }
