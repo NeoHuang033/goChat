@@ -1,9 +1,9 @@
-package handler
+package api
 
 import (
 	"context"
-
 	"github.com/gin-gonic/gin"
+
 	"goChat/src/domain"
 	"net/http"
 	"time"

@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"context"
@@ -43,6 +43,7 @@ func (h *Handler) LoginUserHandler() gin.HandlerFunc {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not generate token"})
 			return
 		}
+
 		c.JSON(http.StatusOK, gin.H{"message": "Login successfully", "token": tokenString})
 	}
 }

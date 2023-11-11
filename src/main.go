@@ -3,10 +3,12 @@ package main
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"goChat/src/api"
+
+	"goChat/src/connect"
+
 	//"fmt"
 	"go.mongodb.org/mongo-driver/mongo"
-	"goChat/src/api"
-	"goChat/src/connect"
 )
 
 var mongoClient *mongo.Client
@@ -17,7 +19,7 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Secret Key:", secretKey)*/
-	connect.New().Run()
+	go connect.New().Run()
 	api.New().Run()
 
 }

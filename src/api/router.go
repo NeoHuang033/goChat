@@ -1,11 +1,10 @@
-package router
+package api
 
 import (
 	"context"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"goChat/src/api/handler"
 	"log"
 	"net/http"
 	"time"
@@ -25,7 +24,7 @@ func Register() *gin.Engine {
 func initUserRouter(router *gin.Engine) {
 	//	userGroup := r.Group("/user")
 
-	mongoHandler := handler.MongoHandler(mongoClient)
+	mongoHandler := MongoHandler(mongoClient)
 	router.POST("/login", mongoHandler.LoginUserHandler())
 	router.POST("/register", mongoHandler.RegisterHandler())
 	//userGroup.Use(CheckSessionId())
