@@ -15,5 +15,7 @@ Token Verification: Ensures security and integrity of user sessions through toke
 Technologies Used
 
 Go (Golang): The primary programming language used for developing the application.
+
 RabbitMQ: For handling message queues to ensure efficient and reliable message delivery.
+
 MongoDB: Leveraged for database requirements, managing user data, and message storage.
