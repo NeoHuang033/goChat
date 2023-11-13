@@ -1,10 +1,13 @@
 package api
 
 import (
+	"encoding/json"
 	//"bufio"
 	//"encoding/json"
 	"fmt"
+	"goChat/src/connect"
 	"goChat/src/domain"
+	"log"
 
 	//"io"
 	"net"
@@ -87,4 +90,34 @@ func (manager *ConnManager) ProcessMessage(msg domain.Message) error {
 	}
 
 	return nil
+}
+
+func (manager *ConnManager) StartConsuming(rabbitMQClient *connect.RabbitMQClient) {
+	msgs, err := rabbitMQClient.Channel.Consume(
+		rabbitMQClient.Queue.Name,
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("Failed to register a consumer: %s", err)
+	}
+
+	go func() {
+		for d := range msgs {
+			log.Printf("Received a message: %s", d.Body)
+
+			var msg domain.Message
+			if err := json.Unmarshal(d.Body, &msg); err != nil {
+				log.Printf("Error unmarshaling message: %s", err)
+				continue
+			}
+
+			// 处理消息
+			// ...
+		}
+	}()
 }

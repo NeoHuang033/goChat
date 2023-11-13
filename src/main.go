@@ -19,15 +19,16 @@ func main() {
 		panic(err)
 	}
 	fmt.Println("Secret Key:", secretKey)*/
+
 	go connect.New().Run()
 	api.New().Run()
 
 }
 
 func generateSecretKey() (string, error) {
-	bytes := make([]byte, 32) // 生成 256 位密钥
+	bytes := make([]byte, 32)
 	if _, err := rand.Read(bytes); err != nil {
 		return "", err // 读取随机数失败
 	}
-	return hex.EncodeToString(bytes), nil // 将字节序列转换成十六进制编码的字符串
+	return hex.EncodeToString(bytes), nil
 }

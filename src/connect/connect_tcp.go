@@ -7,6 +7,7 @@ import (
 	api "goChat/src/api/handler"
 	"goChat/src/domain"
 	"io"
+	"log"
 	"net"
 	"os"
 )
@@ -23,19 +24,28 @@ func (c *Connect) InitTcpServer() error {
 	defer listener.Close()
 	fmt.Printf("Listening on %s\n", listenAddr)
 	clients := make(map[string]net.Conn)
+
+	rabbitMQClient, err := NewRabbitMQClient("", "")
+	if err != nil {
+		log.Fatalf("Failed to create RabbitMQ client: %s", err)
+	}
+	defer rabbitMQClient.Close()
+	connManager := api.NewConnManager()
+	connManager.StartConsuming(rabbitMQClient)
+
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
 			fmt.Printf("Error accepting connection: %s\n", err)
 			continue
 		}
-		go handleConnection(conn, clients)
+		go handleConnection(conn, clients, rabbitMQClient)
 	}
 
 	return nil
 }
 
-func handleConnection(conn net.Conn, clients map[string]net.Conn) {
+func handleConnection(conn net.Conn, clients map[string]net.Conn, rabbitMQClient *RabbitMQClient) {
 	defer conn.Close()
 	var msg domain.Message
 
@@ -60,6 +70,13 @@ func handleConnection(conn net.Conn, clients map[string]net.Conn) {
 		fmt.Println("Invalid token. Closing connection.")
 		return
 	}
+
+	err = rabbitMQClient.PublishMessage(msg.Message)
+	if err != nil {
+		fmt.Printf("Failed to publish message to RabbitMQ: %s\n", err)
+		return
+	}
+
 	go connManager.HandleConnection(conn, msg)
 	for {
 		message, err := reader.ReadString('\n')
